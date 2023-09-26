@@ -9,4 +9,6 @@
 - php artisan weather accu-weather Rome Mail azamatumarjonov@gmail.com
 - php artisan weather accu-weather Istanbul Console
 
+Telegram channel: https://t.me/current_weather_task
+
 # weather_app
