@@ -14,14 +14,7 @@ class WeatherService
                 $lat = null;
                 $lon = null;
                 if ($geocoding->status() == 200) {
-                    $body = $geocoding->body();
-                    if (is_string($body)) {
-                        $cityArray = json_decode($body, true);
-                    } elseif (is_array($body)) {
-                        $cityArray = $body;
-                    } else {
-                        throw new \Exception('Error');
-                    }
+                    $cityArray = json_decode($geocoding->body(), true);
                     foreach ($cityArray as $c) {
                         if ($c['name'] === $city && isset($c['lat'], $c['lon'])) {
                             $lat = $c['lat'];
@@ -30,7 +23,7 @@ class WeatherService
                         }
                     }
                 } else {
-                    throw new \Exception('City not found');
+                    throw new \Exception('City not found or The allowed number of requests has been exceeded.');
                 }
                 if ($lat && $lon) {
                     $current = "hourly,daily,minutely";
@@ -50,14 +43,7 @@ class WeatherService
                 $geocoding = Http::get("http://dataservice.accuweather.com/locations/v1/cities/search?apikey={$api}&q={$city}");
                 if ($geocoding->status() == 200) {
                     $key = null;
-                    $body = $geocoding->body();
-                    if (is_string($body)) {
-                        $cityArray = json_decode($body, true);
-                    } elseif (is_array($body)) {
-                        $cityArray = $body;
-                    } else {
-                        throw new \Exception('City not found');
-                    }
+                    $cityArray = json_decode($geocoding->body(), true);
                     foreach ($cityArray as $c) {
                         if ($c['EnglishName'] === $city) {
                             $key = $c['Key'];
@@ -65,7 +51,7 @@ class WeatherService
                         }
                     }
                 } else {
-                    throw new \Exception('City not found');
+                    throw new \Exception('City not found or The allowed number of requests has been exceeded.');
                 }
                 $url = "http://dataservice.accuweather.com/currentconditions/v1/{$key}?apikey={$api}&language=ru-RU&details=true";
                 $data = $this->fetchData($url);

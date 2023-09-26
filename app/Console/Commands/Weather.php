@@ -47,6 +47,8 @@ class Weather extends Command
 
         $notifiable = $this->getNotifiable($channel, $to, $weatherData);
         $notifiable->notify(new WeatherNotification($weatherData));
+
+        $this->info('success');
     }
 
     protected function getNotifiable($channel, $to, $weatherData)
