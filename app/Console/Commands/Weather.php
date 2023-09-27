@@ -2,28 +2,22 @@
 
 namespace App\Console\Commands;
 
-use App\Notifications\WeatherNotification;
-use App\Services\WeatherService;
+use App\Traits\Weather\UiTraits;
 use Illuminate\Console\Command;
-use Illuminate\Notifications\AnonymousNotifiable;
-use InvalidArgumentException;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Support\Facades\Config;
+use function Laravel\Prompts\info;
 
-class Weather extends Command
+class Weather extends Command implements PromptsForMissingInput
 {
-    protected $weatherService;
-
-    public function __construct(WeatherService $weatherService)
-    {
-        parent::__construct();
-        $this->weatherService = $weatherService;
-    }
+    use UiTraits;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'weather {provider} {city} {channel=console} {to?}';
+    protected $signature = 'weather {provider} {city} {channel} {to?}';
 
     /**
      * The console command description.
@@ -43,31 +37,21 @@ class Weather extends Command
         $channel = $this->argument('channel');
         $to = $this->argument('to');
 
-        $weatherData = $this->weatherService->getWeather($provider, $city);
-
-        $notifiable = $this->getNotifiable($channel, $to, $weatherData);
-        $notifiable->notify(new WeatherNotification($weatherData));
-
-        $this->info('success');
-    }
-
-    protected function getNotifiable($channel, $to, $weatherData)
-    {
-        $notifiable = new AnonymousNotifiable();
-        switch ($channel) {
-            case 'Mail':
-                return $notifiable->route('mail', $to);
-            case 'Telegram':
-                return $notifiable->route('telegram', $to);
-            case 'Console':
-                $this->info('Текущая погода:');
-                $this->comment('Город: ' . $weatherData['city']);
-                $this->comment('Статус: ' . $weatherData['text']);
-                $this->comment('Температура: ' . $weatherData['temp']);
-                break;
-            default:
-                throw new InvalidArgumentException("Unsupported channel: $channel");
+        $providerClass = Config::get("weather.providers.$provider");
+        if (!$providerClass || !class_exists($providerClass)) {
+            info("Unsupported provider: $provider");
+            exit();
         }
-        return $notifiable;
+        $weatherProvider = app($providerClass);
+        $weatherData = $weatherProvider->getWeather($city);
+
+        $channelClass = Config::get("services.channels.$channel");
+        if (!$channelClass || !class_exists($channelClass)) {
+            info("Unsupported channel: $channel");
+            exit();
+        }
+        $notifiableChannel = app($channelClass);
+        $notifiableChannel->send($to, $weatherData);
+        $this->components->info('Success');
     }
 }

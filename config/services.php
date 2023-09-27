@@ -1,5 +1,9 @@
 <?php
 
+use App\Channels\ConsoleChannel;
+use App\Channels\MailChannel;
+use App\Channels\TelegramChannel;
+
 return [
 
     /*
@@ -13,6 +17,12 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+
+    'channels' => [
+        'mail' => MailChannel::class,
+        'telegram' => TelegramChannel::class,
+        'console' => ConsoleChannel::class,
+    ],
 
     'telegram-bot-api' => [
         'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')

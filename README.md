@@ -1,3 +1,5 @@
+# weather_app
+
 ## Weather Task
 
 - Started: Sen 26, 15:15
@@ -5,10 +7,6 @@
 
 ## Example
 
-- php artisan weather open-weather Tashkent Telegram 1001938683863
-- php artisan weather accu-weather Rome Mail azamatumarjonov@gmail.com
-- php artisan weather accu-weather Istanbul Console
+- php artisan weather (with Laravel Prompts)
 
 Telegram channel: https://t.me/current_weather_task
-
-# weather_app
