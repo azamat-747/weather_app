@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Traits\Weather\UiTraits;
+use App\Weather\Facades\WeatherFacade;
+use App\Weather\Traits\UiTraits;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Config;
@@ -37,13 +38,7 @@ class Weather extends Command implements PromptsForMissingInput
         $channel = $this->argument('channel');
         $to = $this->argument('to');
 
-        $providerClass = Config::get("weather.providers.$provider");
-        if (!$providerClass || !class_exists($providerClass)) {
-            info("Unsupported provider: $provider");
-            exit();
-        }
-        $weatherProvider = app($providerClass);
-        $weatherData = $weatherProvider->getWeather($city);
+        $weatherData = WeatherFacade::provider($channel, $city);
 
         $channelClass = Config::get("services.channels.$channel");
         if (!$channelClass || !class_exists($channelClass)) {

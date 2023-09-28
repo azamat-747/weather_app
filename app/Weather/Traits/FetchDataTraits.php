@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits\Weather;
+namespace App\Weather\Traits;
 
 use Illuminate\Support\Facades\Http;
 use function Laravel\Prompts\error;

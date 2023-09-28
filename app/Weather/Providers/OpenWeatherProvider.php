@@ -3,7 +3,7 @@
 namespace App\Providers\Weather;
 
 use App\Interfaces\WeatherProvider;
-use App\Traits\Weather\FetchDataTraits;
+use App\Weather\Traits\FetchDataTraits;
 use Illuminate\Support\Facades\Http;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\spin;
